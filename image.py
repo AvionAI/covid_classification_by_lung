@@ -8,13 +8,10 @@ class avion_image_tools:
         image functions.
     """
 
-    def __init__(self) -> None:
-        # For the beginning you don't have to 
-        # implement init function
-        # We will complete this later
+    def __init__(self):
         pass
 
-    def enhance_image_gamma(image,gamma,demo=1,invert=0):
+    def enhance_image_gamma(self,image,gamma,demo=1,invert=0):
         '''
         image enhancing with gamma correction, set demo to 1 to see result in different window, set invert 1 to process inverted image
         '''
@@ -29,7 +26,7 @@ class avion_image_tools:
         return enhanced
 
 
-    def enhance_image_clahe(image,limit,demo=1,invert=0):
+    def enhance_image_clahe(self,image,limit,demo=1,invert=0):
         '''
         image enhancing with CLAHE method, set demo to 1 to see result in different window, set invert 1 to process inverted image
         '''
@@ -43,5 +40,7 @@ class avion_image_tools:
             cv2.waitKey()
         return enhanced
 
-    def cropper(self, test_img, demonstration = True, *kwargs):
+    def cropper(self, test_img, demonstration = True):
         pass
+
+
