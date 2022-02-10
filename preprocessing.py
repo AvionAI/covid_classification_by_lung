@@ -19,17 +19,13 @@ class avion_preprocessing:
         preprocessing functions.
     """
 
-    def __init__(self) -> None:
-        # @ TODO: Change the constructor in the proper way (add path arguments etc.)
-        # For the beginning you don't have to 
-        # implement init function
-        # We will complete this later
-        pass
+    def __init__(self,path:str) -> None:
+        self.path=path
 
     #Returns pathList of the dataset
-    def get_pathList(self, path:str):
-        self.pathList=[]
-        for subdir, dirs, files in os.walk(path):
+    def get_pathList(self):
+        pathList=[]
+        for subdir, dirs, files in os.walk(self.path):
             liste=list()
             for file in files:
                 filestr=file
@@ -37,28 +33,54 @@ class avion_preprocessing:
                 if filestr.split(".")[-1] in ['png','jpg','jpeg']:
                     liste.append(filePath)
             if len(liste)!=0:
-                self.pathList.append(liste)
-        return self.pathList
+                pathList.append(liste)
+        train,validation,test=[],[],[]
+        for i in range(len(pathList)):
+            if pathList[i][0].split('/')[1]=='train':
+                train.append(pathList[i])
+            elif pathList[i][0].split('/')[1]=='validation':
+                validation.append(pathList[i])
+            elif pathList[i][0].split('/')[1]:
+                test.append(pathList[i])
+
+        return [train,validation,test]
 
     #TODO: Make this work with splitted data
     #Returns metadata of the dataset
-    def summary_of_data(self):
-        samplePath=self.pathList[0][0]
-        self.dataType=samplePath.split(".")[-1]
-        sampleimage=cv2.imread(samplePath)
-        self.shape=sampleimage.shape
-        self.numbers=[len(self.get_pathList[i]) for i in range(len(self.get_pathList))]
-        infostr="""
-        Data Type: {}
-        Image shape: {}
-        Number of data :
-        """.format(self.dataType,self.shape)
-        print(infostr)
-        for i in range(len(self.numbers)):
-            print(" class "+str(i)+": "+str(self.numbers[i]))
+    def summary_of_data(self,isSplitted=True):
 
-        return infostr
-    
+        if isSplitted:
+            for elem in self.get_pathList():
+                print(elem[0][0].split("/")[1]+":")
+                samplePath=self.get_pathList()[0][0][0]
+                self.dataType=samplePath.split(".")[-1]
+                sampleimage=cv2.imread(samplePath)
+                self.shape=sampleimage.shape
+                self.numbers=[len(elem[i]) for i in range(len(elem))]
+                infostr="""Data Type: {}
+    Image shape: {}
+    Number of data :
+                """.format(self.dataType,self.shape)
+                print(infostr)
+                for i in range(len(self.numbers)):
+                    print("\tclass "+str(i)+": "+str(self.numbers[i]))
+                print("\n")
+        else:
+            print(self.get_pathList[0].split("/")[1]+":")
+            samplePath=self.get_pathList()[0][0]
+            self.dataType=samplePath.split(".")[-1]
+            sampleimage=cv2.imread(samplePath)
+            self.shape=sampleimage.shape
+            self.numbers=[len(self.get_pathList[i]) for i in range(len(self.get_pathList))]
+            infostr="""Data Type: {}
+Image shape: {}
+Number of data :
+            """.format(self.dataType,self.shape)
+            print(infostr)
+            for i in range(len(self.numbers)):
+                print("\tclass "+str(i)+": "+str(self.numbers[i]))
+            print("\n")
+
     # @TODO: Add augmentation arguments
     # Read the data with keras image data generator
     # Returns a list consisting of train,validation and test generators
