@@ -37,7 +37,7 @@ class avion_image_tools:
             cv2.waitKey()
         return enhanced
 
-    def cropper(org_img,convert_to_gray=1):
+    def cropper(org_img,return_size=299,convert_to_gray=1):
         '''
         crops the given image, returns bounding box coordinates with cropped and resized image
         if given image is not-grayscale, set convert_to_gray to 1
@@ -87,7 +87,7 @@ class avion_image_tools:
 
         #crop and resize original image
         cropped=org_img[min_y:max_y+1,min_x:max_x+1]
-        cropped=cv2.resize(cropped,(299,299))
+        cropped=cv2.resize(cropped,(return_size,return_size))
 
         return bbox, cropped
 
