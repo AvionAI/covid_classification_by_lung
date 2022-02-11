@@ -89,6 +89,6 @@ class avion_image_tools:
         cropped=org_img[min_y:max_y+1,min_x:max_x+1]
         cropped=cv2.resize(cropped,(return_size,return_size))
 
-        return bbox, cropped
+        return bbox, cropped, return_size
 
 
