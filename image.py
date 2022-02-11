@@ -1,12 +1,5 @@
-# IMAGE
-# 
-# In this assingment you are expected to implement 
-# functions about image.
-#
-# Here you should import necessary libraries
-# ---------------
-import os
-# ---------------
+import cv2
+import numpy as np
 
 class avion_image_tools:
     """ 
@@ -15,21 +8,39 @@ class avion_image_tools:
         image functions.
     """
 
-    def __init__(self) -> None:
-        # For the beginning you don't have to 
-        # implement init function
-        # We will complete this later
+    def __init__(self):
         pass
 
-    # @TODO: Implement an image enhancer function
-    # @TODO: You should return the image.
-    # Note: feel free to change arguments
-    def image_enhancer(self, test_img, demonstration = True, *kwargs):
+    def enhance_image_gamma(self,image,gamma,demo=1,invert=0):
+        '''
+        image enhancing with gamma correction, set demo to 1 to see result in different window, set invert 1 to process inverted image
+        '''
+        invGamma = 1.0 / gamma
+        table = np.array([((i / 255.0) ** invGamma) * 255 for i in np.arange(0, 256)]).astype("uint8")
+        if invert:
+            image=cv2.bitwise_not(image)
+        enhanced=cv2.LUT(image, table)
+        if demo:
+            cv2.imshow("gama={}".format(gamma),np.hstack([image,enhanced]))
+            cv2.waitKey()
+        return enhanced
+
+
+    def enhance_image_clahe(self,image,limit,demo=1,invert=0):
+        '''
+        image enhancing with CLAHE method, set demo to 1 to see result in different window, set invert 1 to process inverted image
+        '''
+        if invert:
+            image=cv2.bitwise_not(image)
+        image_bw = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        clahe = cv2.createCLAHE(clipLimit=limit,tileGridSize=(32,32))
+        enhanced = clahe.apply(image_bw)
+        if demo:
+            cv2.imshow("CLAHE",np.concatenate((image_bw,enhanced),axis=0))
+            cv2.waitKey()
+        return enhanced
+
+    def cropper(self, test_img, demonstration = True):
         pass
 
-    # @TODO: Implement a cropper function
-    # @TODO: It's adviced to return 2 location points which can draw a rectangle around the lung
-    # Note: If second @TODO is not possible feel free to implement your own style.
-    # Note: feel free to change arguments
-    def cropper(self, test_img, demonstration = True, *kwargs):
-        pass
+
