@@ -5,7 +5,7 @@
 #
 # Here you should import necessary libraries
 # ---------------
-from tensorflow.keras.layers import Input, Dense, Dropout, GlobalAveragePooling2D, MaxPooling2D, Conv2D, Flatten
+from tensorflow.keras.layers import Input, Dense, Dropout, GlobalAveragePooling2D, MaxPooling2D, Conv2D, Flatten, Rescaling
 from tensorflow.keras import Model
 from keras.models import Sequential
 from tensorflow.keras.optimizers import Adam
@@ -13,6 +13,7 @@ from tensorflow.keras.applications.vgg16 import VGG16,preprocess_input
 import matplotlib.pyplot as plt
 from tensorflow.keras import Model
 from keras.constraints import max_norm
+import tensorflow as tf
 # ---------------
 
 
@@ -61,14 +62,16 @@ class avion_model:
             return None
         if (self.model_name.lower() == "vgg16"):
             first_input=Input(shape=self.shape,name='firstImage')
-            prep1=preprocess_input(first_input)
+            prep1=Rescaling(1./255)(first_input)
             conv1=VGG16(input_tensor=prep1,weights='imagenet',include_top=False)
             model1 = Model(inputs = conv1.input,outputs=conv1.output,name='conv1')
             model1.trainable=self.trainable
             x = GlobalAveragePooling2D()(model1.output)
-            x = Dropout(0.5)(x)
-            x = Flatten()(x)
-            x = Dense(64,activation='relu')(x)
+            x = Dense(512,activation='relu')(x)
+            x = Dropout(0.2)(x)
+            x = Dense(512,activation='relu')(x)
+            x = Dense(256,activation='relu')(x)
+            x = Dense(128,activation='relu')(x)
             pred = Dense(self.number_of_classes,activation='softmax')(x)
             self.model = Model(inputs=[first_input],outputs=pred)
             return self.model
@@ -93,14 +96,13 @@ class avion_model:
         self.model.compile(optimizer = 'adam' ,loss="categorical_crossentropy", metrics=['categorical_accuracy','acc'])
 
     
-    def model_fit(self,x_traindata, x_testdata, y_traindata=None, y_testdata=None):
+    def model_fit(self,traindata,testdata):
           self.model.fit(
-                        x=x_traindata,
-                        y=y_traindata,
+                        traindata,
                         batch_size = self.batch_size,
                         epochs=self.epochs,
                         verbose=1,
-                        validation_data=(x_testdata, y_testdata),
+                        validation_data=testdata,
                         validation_batch_size=self.batch_size,
                       )
 
