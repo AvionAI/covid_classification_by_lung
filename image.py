@@ -8,6 +8,9 @@ class avion_image_tools:
         image functions.
     """
 
+    def __init__(self):
+        pass
+
     def enhance_image_gamma(self,image,gamma,demo=1,invert=0):
         '''
         image enhancing with gamma correction, set demo to 1 to see result in different window, set invert 1 to process inverted image
@@ -29,8 +32,9 @@ class avion_image_tools:
         '''
         if invert:
             image=cv2.bitwise_not(image)
-        image_bw = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        clahe = cv2.createCLAHE(clipLimit=limit,tileGridSize=(32,32))
+        image_bw = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY).astype('uint8')
+        image_bw=image_bw*255
+        clahe = cv2.createCLAHE(clipLimit=limit,tileGridSize=(8,8))
         enhanced = clahe.apply(image_bw)
         if demo:
             cv2.imshow("CLAHE",np.concatenate((image_bw,enhanced),axis=0))
@@ -90,5 +94,3 @@ class avion_image_tools:
         cropped=cv2.resize(cropped,(return_size,return_size))
 
         return bbox, cropped, return_size
-
-
